@@ -14,7 +14,9 @@ void main() {
     setUp(() {
       repository = MockNetworkProvidersRepository();
     });
-    test('should initial state is NetworkProvidersState.initial', () {
+    test(
+        'should initial state '
+        'is NetworkProvidersState.initial', () {
       final networkProvidersCubit = NetworkProvidersCubit(repository);
       expect(
         networkProvidersCubit.state,
@@ -32,7 +34,8 @@ void main() {
         );
       });
       blocTest<NetworkProvidersCubit, NetworkProvidersState>(
-        'should invokes getNetworkProviders on repository',
+        'should invokes getNetworkProviders '
+        'on repository',
         build: () => NetworkProvidersCubit(repository),
         act: (cubit) => cubit.getNetworkProviders(),
         verify: (_) {
@@ -41,7 +44,8 @@ void main() {
       );
 
       blocTest<NetworkProvidersCubit, NetworkProvidersState>(
-        'should emits [loading, success] when repository succeeds',
+        'should emits [loading, success] '
+        'when repository succeeds',
         build: () {
           when(
             () => repository.readJson(),
@@ -62,7 +66,8 @@ void main() {
       );
 
       blocTest<NetworkProvidersCubit, NetworkProvidersState>(
-        'should emits [loading, failure] when repository '
+        'should emits [loading, failure] '
+        'when repository '
         'throws (defaultError)',
         build: () {
           when(
