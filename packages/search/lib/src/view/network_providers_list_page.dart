@@ -35,58 +35,61 @@ class NetworkProvidersListView extends StatelessWidget {
     return Scaffold(
       body: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: LayoutBuilder(builder: (
-          context,
-          constraints,
-        ) {
-          return CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                floating: true,
-                pinned: true,
-                backgroundColor: Colors.white,
-                bottom: AppBar(
+        child: LayoutBuilder(
+          builder: (
+            context,
+            constraints,
+          ) {
+            return CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  floating: true,
+                  pinned: true,
                   backgroundColor: Colors.white,
-                  elevation: 0,
-                  title: ColoredBox(
-                    color: Colors.white,
-                    child: Center(
-                      child: TextField(
-                        onChanged:
-                            context.read<NetworkProvidersCubit>().onChanged,
-                        decoration: const InputDecoration(
-                          hintText: 'Search for Network providers',
-                          prefixIcon: Icon(Icons.search),
+                  bottom: AppBar(
+                    backgroundColor: Colors.white,
+                    elevation: 0,
+                    title: ColoredBox(
+                      color: Colors.white,
+                      child: Center(
+                        child: TextField(
+                          onChanged:
+                              context.read<NetworkProvidersCubit>().onChanged,
+                          decoration: const InputDecoration(
+                            hintText: 'Search for Network providers',
+                            prefixIcon: Icon(Icons.search),
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              SliverList(
-                delegate: SliverChildListDelegate([
-                  BlocBuilder<NetworkProvidersCubit, NetworkProvidersState>(
-                    builder: (context, state) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _NetworkProvidersListState(
-                              state: state,
-                              minWidth: constraints.maxWidth,
-                              minHeight:
-                                  50 / 100 * MediaQuery.of(context).size.height,
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ]),
-              ),
-            ],
-          );
-        }),
+                SliverList(
+                  delegate: SliverChildListDelegate([
+                    BlocBuilder<NetworkProvidersCubit, NetworkProvidersState>(
+                      builder: (context, state) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _NetworkProvidersListState(
+                                state: state,
+                                minWidth: constraints.maxWidth,
+                                minHeight: 50 /
+                                    100 *
+                                    MediaQuery.of(context).size.height,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ]),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
