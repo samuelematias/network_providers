@@ -5,14 +5,14 @@ import 'package:search/src/cubit/network_providers_cubit.dart';
 import 'package:search/src/models/models.dart';
 import 'package:search/src/repositories/repositories.dart';
 
-class MockNetworkProvidersRepository extends Mock
+class _MockNetworkProvidersRepository extends Mock
     implements NetworkProvidersRepository {}
 
 void main() {
   group('NetworkProvidersCubit', () {
     late NetworkProvidersRepository repository;
     setUp(() {
-      repository = MockNetworkProvidersRepository();
+      repository = _MockNetworkProvidersRepository();
     });
     test(
         'should initial state '

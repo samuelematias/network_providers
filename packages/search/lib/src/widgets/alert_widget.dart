@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 /// {@template alert_widget}
-/// The page responsabilite to render the list of movies.
+/// Widget responsabilite to render
+/// a alert with a icon and text.
+/// and maybe a button too.
 /// {@endtemplate}
 class AlertWidget extends StatelessWidget {
   /// {@macro alert_widget}

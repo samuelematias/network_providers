@@ -4,7 +4,8 @@ import 'package:search/search.dart';
 import 'package:search/src/widgets/widgets.dart';
 
 /// {@template network_providers_list_page}
-/// The page responsabilite to render the list of movies.
+/// The page responsabilite to render
+/// the list of network providers.
 /// {@endtemplate}
 class NetworkProvidersListPage extends StatelessWidget {
   /// {@macro network_providers_list_page}
@@ -16,63 +17,76 @@ class NetworkProvidersListPage extends StatelessWidget {
       create: (context) => NetworkProvidersCubit(
         context.read<NetworkProvidersRepository>(),
       )..getNetworkProviders(),
-      child: const _NetworkProvidersListView(),
+      child: const NetworkProvidersListView(),
     );
   }
 }
 
-class _NetworkProvidersListView extends StatelessWidget {
-  const _NetworkProvidersListView();
+/// {@template network_providers_list_view}
+/// The view responsabilite to render
+/// the list of network providers.
+/// {@endtemplate}
+class NetworkProvidersListView extends StatelessWidget {
+  /// {@macro network_providers_list_view}
+  const NetworkProvidersListView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              floating: true,
-              pinned: true,
-              backgroundColor: Colors.white,
-              bottom: AppBar(
+        child: LayoutBuilder(builder: (
+          context,
+          constraints,
+        ) {
+          return CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                floating: true,
+                pinned: true,
                 backgroundColor: Colors.white,
-                elevation: 0,
-                title: ColoredBox(
-                  color: Colors.white,
-                  child: Center(
-                    child: TextField(
-                      onChanged:
-                          context.read<NetworkProvidersCubit>().onChanged,
-                      decoration: const InputDecoration(
-                        hintText: 'Search for Network providers',
-                        prefixIcon: Icon(Icons.search),
+                bottom: AppBar(
+                  backgroundColor: Colors.white,
+                  elevation: 0,
+                  title: ColoredBox(
+                    color: Colors.white,
+                    child: Center(
+                      child: TextField(
+                        onChanged:
+                            context.read<NetworkProvidersCubit>().onChanged,
+                        decoration: const InputDecoration(
+                          hintText: 'Search for Network providers',
+                          prefixIcon: Icon(Icons.search),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            SliverList(
-              delegate: SliverChildListDelegate([
-                BlocBuilder<NetworkProvidersCubit, NetworkProvidersState>(
-                  builder: (context, state) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _NetworkProvidersListState(
-                            state: state,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ]),
-            ),
-          ],
-        ),
+              SliverList(
+                delegate: SliverChildListDelegate([
+                  BlocBuilder<NetworkProvidersCubit, NetworkProvidersState>(
+                    builder: (context, state) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _NetworkProvidersListState(
+                              state: state,
+                              minWidth: constraints.maxWidth,
+                              minHeight:
+                                  50 / 100 * MediaQuery.of(context).size.height,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ]),
+              ),
+            ],
+          );
+        }),
       ),
     );
   }
@@ -81,13 +95,22 @@ class _NetworkProvidersListView extends StatelessWidget {
 class _NetworkProvidersListState extends StatelessWidget {
   const _NetworkProvidersListState({
     required this.state,
+    required this.minWidth,
+    required this.minHeight,
   });
+
   final NetworkProvidersState state;
+  final double minWidth;
+  final double minHeight;
 
   @override
   Widget build(BuildContext context) {
     if (state.isLoading) {
-      return const CircularProgressIndicator.adaptive();
+      return _CenterWidgetInsideSingleChildScrollView(
+        minWidth: minWidth,
+        minHeight: minHeight,
+        child: const CircularProgressIndicator.adaptive(),
+      );
     } else if (state.networkProvidersList.isNotEmpty) {
       final networkProvidersNotFoundBySearch = state.isSearchBarNotEmpty &&
           state.networkProvidersListSearched.isEmpty;
@@ -99,11 +122,20 @@ class _NetworkProvidersListState extends StatelessWidget {
       return _NetworkProvidersList(
         networkProvidersNotFoundBySearch: networkProvidersNotFoundBySearch,
         networkProvidersList: networkProvidersList,
+        minWidth: minWidth,
+        minHeight: minHeight,
       );
     } else if (state.errorType == ErrorType.defaultError) {
-      return const AlertWidget(
-        alertIcon: Icons.error,
-        alertMessage: 'Ops, Something is wrong!',
+      return _CenterWidgetInsideSingleChildScrollView(
+        minWidth: minWidth,
+        minHeight: minHeight,
+        child: AlertWidget(
+          alertIcon: Icons.error,
+          alertMessage: 'Ops, Something is wrong!',
+          alertButtonLabel: 'Try again',
+          alertButtonOnPressed: () =>
+              context.read<NetworkProvidersCubit>().getNetworkProviders(),
+        ),
       );
     }
 
@@ -115,10 +147,14 @@ class _NetworkProvidersList extends StatelessWidget {
   const _NetworkProvidersList({
     required this.networkProvidersNotFoundBySearch,
     required this.networkProvidersList,
+    required this.minWidth,
+    required this.minHeight,
   });
 
   final bool networkProvidersNotFoundBySearch;
   final List<NetworkProvidersModel> networkProvidersList;
+  final double minWidth;
+  final double minHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -127,9 +163,13 @@ class _NetworkProvidersList extends StatelessWidget {
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
           child: networkProvidersNotFoundBySearch
-              ? const AlertWidget(
-                  alertIcon: Icons.error,
-                  alertMessage: 'Ops, nothing found!',
+              ? _CenterWidgetInsideSingleChildScrollView(
+                  minWidth: minWidth,
+                  minHeight: minHeight,
+                  child: const AlertWidget(
+                    alertIcon: Icons.error,
+                    alertMessage: 'Ops, nothing found!',
+                  ),
                 )
               : ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
@@ -144,6 +184,28 @@ class _NetworkProvidersList extends StatelessWidget {
                 ),
         ),
       ],
+    );
+  }
+}
+
+class _CenterWidgetInsideSingleChildScrollView extends StatelessWidget {
+  const _CenterWidgetInsideSingleChildScrollView({
+    required this.minWidth,
+    required this.minHeight,
+    required this.child,
+  });
+
+  final double minWidth;
+  final double minHeight;
+  final Widget child;
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        minWidth: minWidth,
+        minHeight: minHeight,
+      ),
+      child: Center(child: child),
     );
   }
 }
